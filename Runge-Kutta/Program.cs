@@ -66,10 +66,10 @@ namespace Runge_Kutta
             var Rn = new Complex[4];
 
             for (int i = 0; i < 4; i++)
-                Rn[i] = (gridh2[i, (int) (5.0*100)].Real - gridh[i, (int)(5.0 * 50)].Real) / (1 - Math.Pow(2, -2));
+                Rn[i] = (gridh[i, (int) (5.0*50)].Real - gridh2[i, (int) (5.0*100)].Real)/(1 - Math.Pow(2, -2));
 
             double tol = 1e-6;
-            var ht = (1.0/50)*Math.Pow(tol/(Math.Abs( norma(Rn) )), 1/2.0);
+            var ht = (1.0/50)*Math.Pow(tol/(Math.Abs( norma(Rn) )*4), 1/2.0);
             var gridht = Method1(Derivatives, (int)(Math.Ceiling(5 / ht)), 0.1, y0, 0, 5);
 
             var mistake = Math.Sqrt(Math.Pow(gridht[0, (int)(Math.Ceiling(5 / ht))].Real - acc, 2)
