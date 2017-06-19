@@ -77,9 +77,8 @@ namespace Runge_Kutta
                 + Math.Pow(gridht[2, (int)(Math.Ceiling(5 / ht))].Real - acc2, 2)
                 + Math.Pow(gridht[3, (int)(Math.Ceiling(5 / ht))].Real - acc3, 2)
                 );
-            System.Console.Out.WriteLine("Hopt:" + ht);
+            System.Console.Out.WriteLine("Htol:" + ht);
             System.Console.Out.WriteLine("Mistake ht, x=5:" + mistake);
-            System.Console.Out.WriteLine("Count of steps:" + Math.Ceiling(5 / ht));
             System.Console.Out.WriteLine("y0 ht, x=5:" + gridht[0, (int)(Math.Ceiling(5 / ht))]);
             System.Console.Out.WriteLine("y1 ht, x=5:" + gridht[1, (int)(Math.Ceiling(5 / ht))]);
             System.Console.Out.WriteLine("y2 ht, x=5:" + gridht[2, (int)(Math.Ceiling(5 / ht))]);
@@ -145,13 +144,12 @@ namespace Runge_Kutta
        {
             var h = h1;
             var x = xStart;
-           var maxStep = 0.01;
+           var maxStep = 0.001;
             var y = y0;
 
             int counter = 0;
            var rn = new Complex[4];
-           var rn2 = new Complex[4];
-            do
+           do
            {
                counter++;
                 var yf = MethodIteration(derivatives, h, c2, y, x);
@@ -161,8 +159,7 @@ namespace Runge_Kutta
                 for (int i = 0; i < 4; i++)
                {
                    rn[i] = (y2[i].Real - yf[i].Real)/(1.0 - Math.Pow(2, -2));
-                   rn2[i] = (y2[i].Real - yf[i].Real) / ( Math.Pow(2, 2) - 1.0);
-                }
+               }
 
                var rnorm = norma(rn);
                var yfnorm = norma(yf);
@@ -176,33 +173,30 @@ namespace Runge_Kutta
                {
                     x += h;
                     h /= 2;
-                    x += h;
-                    for (int i = 0; i < 4; i++)
-                        y[i] = y2[i] + rn2[i];
-                }
+                   y = y2;
+               }
                else if ((yfnorm * rtol + atol)/8.0 <= rnorm)
                {
                     x += h;
-                    for (int i = 0; i < 4; i++)
-                    y[i] = yf[i] + rn[i];
+                    y = yf;
                }
                else
                {
                     x += h;
-                    for (int i = 0; i < 4; i++)
-                        y[i] = yf[i] + rn[i];
-                }
+                    h = 2*h;
+                    y = yf;
+               }
 
                if (h > maxStep) h = maxStep;
 
                 if ((x<xEnd) && ((x + h) > xEnd))
-              {
-                  h = xEnd - x;
-              }
+               {
+                   h = xEnd - x;
+               }
                 
-            } while (x < xEnd);
+            } while (x <= xEnd);
 
-            System.Console.Out.WriteLine("AutoMethod count of steps: " + counter);
+
             return y;
         }
 
